@@ -62,4 +62,10 @@ public class JWTService {
 		return Keys.hmacShaKeyFor(keyBytes);	
 	}
 
+
+	public String extractUserName(String token) {
+		
+		return "";
+	}
+
 }

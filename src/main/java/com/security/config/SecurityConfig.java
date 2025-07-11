@@ -21,6 +21,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -28,18 +29,22 @@ public class SecurityConfig {
 	
 	@Autowired
 	private UserDetailsService userDetailsService;
+	
+	@Autowired
+	private JwtFilter jwtFilter;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		
 		http.csrf(customizer->customizer.disable());
 		http.authorizeHttpRequests(request->request
-				.requestMatchers("register","login")
+				.requestMatchers("register","login","students")
 				.permitAll()
 				.anyRequest().authenticated()); // all are authenticated by doing this
 		//http.formLogin(Customizer.withDefaults()); // this is used for form login in view page
 		http.httpBasic(Customizer.withDefaults()); // this is used for postman other wise it will return index form
 		http.sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	} 
 
